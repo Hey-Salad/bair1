@@ -1,0 +1,55 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// --- Device identity ---
+#define DEVICE_CLIENT_ID     "bair1-mg24"
+#define DEVICE_DISPLAY_NAME  "Bair1 MG24 Sense"
+#define DEVICE_VERSION       "1.0.0-mg24"
+#define DEVICE_PLATFORM      "embedded"
+#define DEVICE_FAMILY        "mg24"
+
+// --- Cloud endpoint (Cloudflare relay -> Vercel API) ---
+#define BEAR_ONE_API_URL     "YOUR_RELAY_URL_HERE"
+#define BEAR_ONE_API_KEY     "YOUR_API_KEY_HERE"
+
+// --- SIM800L cellular ---
+#define SIM800_ENABLED       1
+#define SIM800_BAUD          9600
+#define SIM800_TX_PIN        D6   // MG24 TX -> SIM800L RXD
+#define SIM800_RX_PIN        D7   // MG24 RX <- SIM800L TXD
+#define SIM800_PWRKEY_PIN    -1   // Set to a GPIO if PWRKEY is wired
+#define SIM800_APN           "YOUR_APN_HERE"
+#define SIM800_USER          ""
+#define SIM800_PASS          ""
+#define SIM800_PIN           ""
+
+// --- Upload interval ---
+#define CLOUD_UPLOAD_INTERVAL_MS  60000   // 1 minute
+#define SAMPLE_INTERVAL_MS        5000    // 5 seconds
+#define LOCATION_SCAN_INTERVAL_MS 120000  // 2 minutes
+
+// --- Air quality sensor (analog) ---
+#define PIN_ADC              D0
+
+// --- SD card (expansion board) ---
+#define PIN_SD_CS            D2
+
+// --- I2C (IMU + any I2C sensors) ---
+#define PIN_I2C_SDA          D4
+#define PIN_I2C_SCL          D5
+
+// --- OLED (expansion board, SSD1306 128x64 on I2C) ---
+#define OLED_WIDTH           128
+#define OLED_HEIGHT          64
+#define OLED_ADDRESS         0x3C
+#define DISPLAY_REFRESH_MS   1000  // 1 second
+
+// --- IMU ---
+#define IMU_I2C_ADDR         0x6A  // LSM6DS3TR-C
+
+// --- Offline storage ---
+#define MAX_STORED_READINGS  200   // Max readings buffered in RAM
+#define SD_LOG_FILE          "/bair1_log.jsonl"
+#define SD_QUEUE_FILE        "/bair1_queue.jsonl"
+
+#endif

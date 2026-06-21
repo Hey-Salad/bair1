@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan for secrets
+        run: |
+          echo "Scanning for hardcoded secrets..."
+          FAILED=0
+
+          # Patterns that should never appear in committed code
+          PATTERNS=(
+            '[0-9a-f]{64}'                           # 64-char hex strings (API keys)
+            'sk_live_[a-zA-Z0-9]+'                   # Stripe live secret keys
+            'sk_test_[a-zA-Z0-9]{20,}'               # Stripe test secret keys
+            'postgresql://[^"]+@[^"]+/[^"]*'         # Database connection strings
+            'AKIA[0-9A-Z]{16}'                       # AWS access key IDs
+            'ghp_[a-zA-Z0-9]{36}'                    # GitHub personal access tokens
+            'xoxb-[0-9]+-[0-9]+-[a-zA-Z0-9]+'       # Slack bot tokens
+          )
+
+          # Files to scan (exclude CI workflows, node_modules, lock files, etc.)
+          FILES=$(git ls-files -- '*.ts' '*.tsx' '*.js' '*.jsx' '*.json' '*.env' \
+            ':!node_modules' ':!.next' ':!package-lock.json' ':!pnpm-lock.yaml' ':!yarn.lock' \
+            ':!*.example' ':!.env.example' ':!.dev.vars.example' \
+            ':!.github/workflows/*')
+
+          for pattern in "${PATTERNS[@]}"; do
+            MATCHES=$(echo "$FILES" | xargs grep -lPn "$pattern" 2>/dev/null || true)
+            if [ -n "$MATCHES" ]; then
+              echo "::error::Potential secret found matching pattern: $pattern"
+              echo "$MATCHES" | while read -r file; do
+                echo "  - $file"
+              done
+              FAILED=1
+            fi
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo ""
+            echo "::error::Secret scan failed. Move secrets to environment variables."
+            exit 1
+          fi
+
+          echo "No secrets found. Scan passed."
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: secret-scan
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: postgresql://placeholder:placeholder@localhost/placeholder
+          SENSOR_API_KEY: placeholder
+          NEXT_PUBLIC_AUTH0_DOMAIN: placeholder.us.auth0.com
+          NEXT_PUBLIC_AUTH0_CLIENT_ID: placeholder
+          NEXT_PUBLIC_MAPBOX_TOKEN: ""
+          STRIPE_SECRET_KEY: sk_test_placeholder

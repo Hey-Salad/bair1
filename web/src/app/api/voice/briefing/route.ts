@@ -1,0 +1,101 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getLatestReading } from "@/lib/dynamo";
+import { getAirQuality, getWeather, getPollenForecast } from "@/lib/google-env";
+import { getAqiState } from "@/lib/aqi";
+
+const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY || "";
+const VOICE_ID = "21m00Tcm4TlvDq8ikWAM"; // Rachel
+
+export async function GET(req: NextRequest) {
+  const deviceId = req.nextUrl.searchParams.get("deviceId");
+  const lat = parseFloat(req.nextUrl.searchParams.get("lat") ?? "51.4775");
+  const lng = parseFloat(req.nextUrl.searchParams.get("lng") ?? "0.0656");
+
+  // Gather data
+  const [sensorReading, googleAq, weather, pollen] = await Promise.all([
+    deviceId ? getLatestReading(deviceId) : null,
+    getAirQuality({ lat, lng }),
+    getWeather({ lat, lng }),
+    getPollenForecast({ lat, lng }, 1),
+  ]);
+
+  // Build briefing text
+  const parts: string[] = [];
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  parts.push(`${greeting}. Here's your air quality briefing.`);
+
+  if (sensorReading) {
+    const state = getAqiState(sensorReading.aqi);
+    parts.push(
+      `Your sensor is reading an AQI of ${sensorReading.aqi}, which is ${state.level}. ${state.guidance[0]}.`
+    );
+  }
+
+  const googleAqi = googleAq?.indexes?.[0];
+  if (googleAqi) {
+    parts.push(
+      `The Google Air Quality index for your area is ${googleAqi.aqi}, rated ${googleAqi.category}.`
+    );
+  }
+
+  if (weather?.temperature) {
+    parts.push(
+      `Current temperature is ${Math.round(weather.temperature.degrees)} degrees${weather.humidity ? `, with ${weather.humidity.percent}% humidity` : ""}.`
+    );
+  }
+
+  const todayPollen = pollen?.[0]?.pollenTypeInfo;
+  if (todayPollen?.length) {
+    const active = todayPollen.filter((p) => p.inSeason);
+    if (active.length > 0) {
+      const levels = active.map((p) => `${p.displayName}: ${p.indexInfo?.category}`).join(", ");
+      parts.push(`Pollen levels today: ${levels}.`);
+    }
+  }
+
+  parts.push("Have a great day.");
+
+  const text = parts.join(" ");
+
+  // If no ElevenLabs key, return text only
+  if (!ELEVENLABS_API_KEY) {
+    return NextResponse.json({ text, audio: null });
+  }
+
+  // Generate TTS
+  try {
+    const ttsRes = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "xi-api-key": ELEVENLABS_API_KEY,
+        },
+        body: JSON.stringify({
+          text,
+          model_id: "eleven_flash_v2_5",
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.75,
+          },
+        }),
+      }
+    );
+
+    if (!ttsRes.ok) {
+      return NextResponse.json({ text, audio: null, error: "TTS failed" });
+    }
+
+    const audioBuffer = await ttsRes.arrayBuffer();
+    const base64 = Buffer.from(audioBuffer).toString("base64");
+
+    return NextResponse.json({
+      text,
+      audio: `data:audio/mpeg;base64,${base64}`,
+    });
+  } catch {
+    return NextResponse.json({ text, audio: null });
+  }
+}

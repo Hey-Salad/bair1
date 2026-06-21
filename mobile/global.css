@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@import 'tailwindcss';
+@import 'uniwind';
+
+@import 'heroui-native/styles';
+
+/*
+ * Bair1 dark theme — OKLCH tokens matching the web dashboard.
+ *
+ * Background:    #191C18  Surface: #242922  Border: #2E3429
+ * Text Primary:  #EFF0ED  Text Muted: #8A8D87  Brand Green: #6EAA3C
+ */
+
+@layer base {
+  :root {
+    color-scheme: dark;
+
+    --white: oklch(100% 0 0);
+    --black: oklch(0% 0 0);
+    --snow: oklch(0.9911 0 0);
+
+    --spacing: 0.25rem;
+    --border-width: 1px;
+    --field-border-width: 0px;
+    --disabled-opacity: 0.5;
+    --ring-offset-width: 2px;
+    --cursor-interactive: pointer;
+    --cursor-disabled: not-allowed;
+    --radius: 0.75rem;
+    --field-radius: calc(var(--radius) * 1.25);
+
+    /* Base */
+    --background: oklch(0.2347 0.0123 145.5);
+    --foreground: oklch(0.9483 0.0036 145.5);
+
+    /* Surface */
+    --surface: oklch(0.2737 0.0136 145.5);
+    --surface-foreground: var(--foreground);
+
+    /* Overlay */
+    --overlay: oklch(0.2737 0.0136 145.5);
+    --overlay-foreground: var(--foreground);
+
+    --muted: oklch(0.6479 0.0089 145.5);
+    --scrollbar: oklch(0.4 0.012 145.5);
+
+    --default: oklch(0.3137 0.0152 145.5);
+    --default-foreground: var(--foreground);
+
+    /* Brand green #6EAA3C */
+    --accent: oklch(0.6695 0.1421 130.5);
+    --accent-foreground: oklch(0.18 0.01 145.5);
+
+    --field-background: oklch(0.3137 0.0152 145.5);
+    --field-foreground: var(--foreground);
+    --field-placeholder: var(--muted);
+    --field-border: transparent;
+
+    --success: oklch(0.6695 0.1421 130.5);
+    --success-foreground: oklch(0.18 0.01 145.5);
+
+    --warning: oklch(0.8203 0.1388 76.34);
+    --warning-foreground: oklch(0.18 0.01 145.5);
+
+    --danger: oklch(0.594 0.1967 24.63);
+    --danger-foreground: var(--snow);
+
+    --segment: oklch(0.3137 0.0152 145.5);
+    --segment-foreground: var(--foreground);
+
+    --border: oklch(0.2942 0.0143 145.5);
+    --separator: oklch(0.2942 0.0143 145.5);
+    --focus: var(--accent);
+    --link: var(--accent);
+
+    --backdrop: rgba(0, 0, 0, 0.6);
+
+    --surface-shadow: 0 0 0 0 transparent inset;
+    --overlay-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.4);
+    --field-shadow: 0 0 0 0 transparent inset;
+    --skeleton-animation: shimmer;
+  }
+}
+
+/* Custom color utilities for AQI levels and brand */
+@theme {
+  --color-bair-green: #6eaa3c;
+  --color-aqi-good: #8dc44a;
+  --color-aqi-moderate: #f5c542;
+  --color-aqi-sensitive: #ed8b00;
+  --color-aqi-unhealthy: #d63031;
+  --color-aqi-veryunhealthy: #6c3483;
+  --color-aqi-hazardous: #7d1128;
+}
+
+@source './node_modules/heroui-native/lib';

@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+/* Bricolage Grotesque for display, Figtree for body */
+
+@theme inline {
+  /* OKLCH palette — Dark mode, committed green strategy */
+  --color-bg: oklch(0.100 0.010 145);
+  --color-surface: oklch(0.145 0.015 145);
+  --color-ink: oklch(0.950 0.005 145);
+  --color-muted: oklch(0.600 0.010 145);
+  --color-primary: oklch(0.580 0.170 140);
+  --color-primary-hover: oklch(0.540 0.170 140);
+  --color-accent: oklch(0.780 0.145 85);
+  --color-accent-dark: oklch(0.600 0.145 85);
+  --color-border: oklch(0.220 0.015 145);
+
+  /* Legacy names */
+  --color-forest-night: oklch(0.950 0.005 145);
+  --color-bair-green: oklch(0.580 0.170 140);
+  --color-clean-air: oklch(0.720 0.160 135);
+  --color-bear-brown: oklch(0.500 0.080 60);
+  --color-fresh-linen: oklch(0.145 0.015 145);
+  --color-amber-yellow: oklch(0.820 0.150 85);
+  --color-aqi-orange: oklch(0.700 0.170 55);
+  --color-aqi-red: oklch(0.550 0.200 25);
+  --color-aqi-purple: oklch(0.400 0.150 310);
+  --color-aqi-grey: oklch(0.350 0.000 0);
+
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-ink);
+
+  --font-sans: 'Figtree', system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+}
+
+/* Fluid type scale — 1.25 ratio */
+h1 {
+  font-size: clamp(2.25rem, 5vw + 1rem, 4rem);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: clamp(1.75rem, 3vw + 0.5rem, 2.75rem);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+h3 {
+  font-size: clamp(1.125rem, 1.5vw + 0.5rem, 1.5rem);
+  line-height: 1.25;
+}
+
+/* Bear breathing — exponential ease out */
+@keyframes bear-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.bear-breathe {
+  animation: bear-breathe 4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/* AQI orb glow */
+@keyframes orb-glow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+.orb-glow {
+  animation: orb-glow 3s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .bear-breathe,
+  .orb-glow {
+    animation: none;
+  }
+}
+
+/* Hide scrollbar for horizontal carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Body text line-length cap */
+.prose-cap {
+  max-width: 65ch;
+}
