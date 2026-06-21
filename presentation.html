@@ -371,32 +371,173 @@
   <div>
     <h3>Architecture</h3>
     <h2>End-to-end in under 60 seconds</h2>
-    <div class="arch-box">
-      <pre>
-  ┌──────────────┐        ┌─────────────────┐        ┌──────────────────┐        ┌──────────────┐
-  │              │  POST  │                 │forward │                  │forward │              │
-  │  MG24 Sense  │───────▶│  AWS API        │───────▶│  Cloudflare      │───────▶│  Vercel      │
-  │  + SPS30     │  2G    │  Gateway        │        │  Worker Relay    │  TLS   │  Next.js 16  │
-  │  + SIM800L   │  TLS   │  (eu-west-2)    │        │  (bair1-relay)   │  1.2   │  /api/read.  │
-  │              │  1.0   │  TLS 1.0 compat │        │  + auth headers  │        │              │
-  └──────────────┘        └─────────────────┘        └──────────────────┘        └──────┬───────┘
-                                                                                       │
-                                                                                       ▼
-                                                                                ┌──────────────┐
-  ┌──────────────┐        ┌─────────────────┐        ┌──────────────────┐       │              │
-  │              │        │                 │        │                  │       │  Neon        │
-  │  Mobile App  │◀───────│  Auth0          │        │  Mapbox GL       │       │  Postgres    │
-  │  (Expo/RN)   │  auth  │  (SPA login)    │        │  (sensor map)    │       │  (serverless)│
-  │              │        │                 │        │                  │       │              │
-  └──────────────┘        └─────────────────┘        └──────────────────┘       └──────────────┘
-                                    │
-  ┌──────────────┐                  │
-  │  Dashboard   │◀─────────────────┘
-  │  bair1.live  │
-  └──────────────┘</pre>
+
+    <!-- SVG Architecture Diagram -->
+    <div style="margin-top: 24px; overflow-x: auto;">
+      <svg viewBox="0 0 1100 520" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 1100px;">
+        <defs>
+          <!-- Arrow marker -->
+          <marker id="arrow" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="10" markerHeight="7" orient="auto-start-auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#8DC44A"/>
+          </marker>
+          <marker id="arrow-dim" viewBox="0 0 10 7" refX="10" refY="3.5" markerWidth="10" markerHeight="7" orient="auto-start-auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#4A8A1A88"/>
+          </marker>
+          <!-- Glow filter -->
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- ===== TOP ROW: Data Ingestion Pipeline ===== -->
+
+        <!-- Node 1: Sensor -->
+        <rect x="20" y="40" width="180" height="120" rx="16" fill="#111" stroke="#4A8A1A" stroke-width="1.5"/>
+        <!-- Chip icon -->
+        <rect x="42" y="62" width="28" height="28" rx="4" fill="none" stroke="#8DC44A" stroke-width="1.5"/>
+        <line x1="56" y1="62" x2="56" y2="54" stroke="#8DC44A" stroke-width="1.5"/>
+        <line x1="48" y1="62" x2="48" y2="56" stroke="#8DC44A" stroke-width="1.5"/>
+        <line x1="64" y1="62" x2="64" y2="56" stroke="#8DC44A" stroke-width="1.5"/>
+        <line x1="56" y1="90" x2="56" y2="98" stroke="#8DC44A" stroke-width="1.5"/>
+        <line x1="48" y1="90" x2="48" y2="96" stroke="#8DC44A" stroke-width="1.5"/>
+        <line x1="64" y1="90" x2="64" y2="96" stroke="#8DC44A" stroke-width="1.5"/>
+        <text x="80" y="74" fill="#F2F4F0" font-family="Space Grotesk" font-size="15" font-weight="600">MG24 Sense</text>
+        <text x="80" y="92" fill="#F2F4F088" font-family="Space Grotesk" font-size="11">+ SPS30 + SIM800L</text>
+        <text x="42" y="140" fill="#4A8A1A" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="1">SENSOR HARDWARE</text>
+
+        <!-- Arrow 1: Sensor → AWS -->
+        <line x1="200" y1="100" x2="270" y2="100" stroke="#8DC44A" stroke-width="2" marker-end="url(#arrow)"/>
+        <text x="212" y="88" fill="#8DC44A" font-family="Space Grotesk" font-size="10" font-weight="600">POST</text>
+        <text x="212" y="118" fill="#F2F4F044" font-family="Space Grotesk" font-size="9">2G / TLS 1.0</text>
+
+        <!-- Node 2: AWS -->
+        <rect x="280" y="40" width="180" height="120" rx="16" fill="#111" stroke="#333" stroke-width="1"/>
+        <!-- Cloud icon -->
+        <path d="M310,82 a14,14 0 0,1 26,0 a10,10 0 0,1 14,8 h-50 a8,8 0 0,1 10,-8z" fill="none" stroke="#FF9900" stroke-width="1.5"/>
+        <text x="342" y="78" fill="#F2F4F0" font-family="Space Grotesk" font-size="15" font-weight="600">AWS API GW</text>
+        <text x="342" y="94" fill="#F2F4F088" font-family="Space Grotesk" font-size="11">+ Lambda relay</text>
+        <text x="302" y="140" fill="#F2F4F044" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="1">TLS 1.0 BRIDGE</text>
+
+        <!-- Arrow 2: AWS → Cloudflare -->
+        <line x1="460" y1="100" x2="530" y2="100" stroke="#8DC44A" stroke-width="2" marker-end="url(#arrow)"/>
+        <text x="470" y="88" fill="#8DC44A" font-family="Space Grotesk" font-size="10" font-weight="600">FORWARD</text>
+        <text x="470" y="118" fill="#F2F4F044" font-family="Space Grotesk" font-size="9">+ auth headers</text>
+
+        <!-- Node 3: Cloudflare -->
+        <rect x="540" y="40" width="180" height="120" rx="16" fill="#111" stroke="#333" stroke-width="1"/>
+        <!-- Shield icon -->
+        <path d="M570,70 l12,-10 l12,10 v16 c0,8 -12,14 -12,14 c0,0 -12,-6 -12,-14z" fill="none" stroke="#F48120" stroke-width="1.5"/>
+        <text x="600" y="78" fill="#F2F4F0" font-family="Space Grotesk" font-size="15" font-weight="600">Cloudflare</text>
+        <text x="600" y="94" fill="#F2F4F088" font-family="Space Grotesk" font-size="11">Worker Relay</text>
+        <text x="562" y="140" fill="#F2F4F044" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="1">EDGE PROXY</text>
+
+        <!-- Arrow 3: Cloudflare → Vercel -->
+        <line x1="720" y1="100" x2="790" y2="100" stroke="#8DC44A" stroke-width="2" marker-end="url(#arrow)"/>
+        <text x="730" y="88" fill="#8DC44A" font-family="Space Grotesk" font-size="10" font-weight="600">FORWARD</text>
+        <text x="730" y="118" fill="#F2F4F044" font-family="Space Grotesk" font-size="9">TLS 1.2</text>
+
+        <!-- Node 4: Vercel -->
+        <rect x="800" y="40" width="180" height="120" rx="16" fill="#111" stroke="#333" stroke-width="1"/>
+        <!-- Triangle icon (Vercel) -->
+        <polygon points="830,90 844,65 858,90" fill="none" stroke="#F2F4F0" stroke-width="1.5"/>
+        <text x="866" y="78" fill="#F2F4F0" font-family="Space Grotesk" font-size="15" font-weight="600">Vercel</text>
+        <text x="866" y="94" fill="#F2F4F088" font-family="Space Grotesk" font-size="11">Next.js 16 API</text>
+        <text x="822" y="140" fill="#F2F4F044" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="1">WEB PLATFORM</text>
+
+        <!-- Arrow down: Vercel → Neon -->
+        <line x1="890" y1="160" x2="890" y2="230" stroke="#8DC44A" stroke-width="2" marker-end="url(#arrow)"/>
+        <text x="898" y="200" fill="#8DC44A" font-family="Space Grotesk" font-size="10" font-weight="600">INSERT</text>
+
+        <!-- ===== MIDDLE ROW: Storage + Services ===== -->
+
+        <!-- Node 5: Neon Postgres -->
+        <rect x="800" y="240" width="180" height="100" rx="16" fill="#111" stroke="#4A8A1A" stroke-width="1.5" filter="url(#glow)"/>
+        <!-- Database icon -->
+        <ellipse cx="840" cy="275" rx="14" ry="6" fill="none" stroke="#8DC44A" stroke-width="1.5"/>
+        <line x1="826" y1="275" x2="826" y2="295" stroke="#8DC44A" stroke-width="1.5"/>
+        <line x1="854" y1="275" x2="854" y2="295" stroke="#8DC44A" stroke-width="1.5"/>
+        <ellipse cx="840" cy="295" rx="14" ry="6" fill="none" stroke="#8DC44A" stroke-width="1.5"/>
+        <text x="862" y="282" fill="#F2F4F0" font-family="Space Grotesk" font-size="15" font-weight="600">Neon</text>
+        <text x="862" y="298" fill="#F2F4F088" font-family="Space Grotesk" font-size="11">Postgres (serverless)</text>
+        <text x="832" y="324" fill="#4A8A1A" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="1">DATABASE</text>
+
+        <!-- Node 6: Auth0 -->
+        <rect x="280" y="240" width="160" height="100" rx="16" fill="#111" stroke="#333" stroke-width="1"/>
+        <!-- Lock icon -->
+        <rect x="310" y="280" width="18" height="14" rx="3" fill="none" stroke="#EB5424" stroke-width="1.5"/>
+        <path d="M313,280 v-6 a6,6 0 0,1 12,0 v6" fill="none" stroke="#EB5424" stroke-width="1.5"/>
+        <text x="336" y="282" fill="#F2F4F0" font-family="Space Grotesk" font-size="14" font-weight="600">Auth0</text>
+        <text x="336" y="298" fill="#F2F4F088" font-family="Space Grotesk" font-size="11">SPA login</text>
+        <text x="316" y="324" fill="#F2F4F044" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="1">AUTH</text>
+
+        <!-- Node 7: Mapbox -->
+        <rect x="460" y="240" width="160" height="100" rx="16" fill="#111" stroke="#333" stroke-width="1"/>
+        <!-- Map pin icon -->
+        <circle cx="498" cy="275" r="5" fill="none" stroke="#4264FB" stroke-width="1.5"/>
+        <path d="M498,280 l0,12" stroke="#4264FB" stroke-width="1.5"/>
+        <circle cx="498" cy="275" r="10" fill="none" stroke="#4264FB" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="516" y="282" fill="#F2F4F0" font-family="Space Grotesk" font-size="14" font-weight="600">Mapbox</text>
+        <text x="516" y="298" fill="#F2F4F088" font-family="Space Grotesk" font-size="11">Sensor map</text>
+        <text x="492" y="324" fill="#F2F4F044" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="1">MAPS</text>
+
+        <!-- Node 8: Stripe -->
+        <rect x="640" y="240" width="140" height="100" rx="16" fill="#111" stroke="#333" stroke-width="1"/>
+        <!-- Card icon -->
+        <rect x="668" y="272" width="22" height="16" rx="3" fill="none" stroke="#635BFF" stroke-width="1.5"/>
+        <line x1="668" y1="279" x2="690" y2="279" stroke="#635BFF" stroke-width="1.5"/>
+        <text x="696" y="282" fill="#F2F4F0" font-family="Space Grotesk" font-size="14" font-weight="600">Stripe</text>
+        <text x="696" y="298" fill="#F2F4F088" font-family="Space Grotesk" font-size="11">Payments</text>
+        <text x="672" y="324" fill="#F2F4F044" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="1">BILLING</text>
+
+        <!-- ===== BOTTOM ROW: Clients ===== -->
+
+        <!-- Arrow: Neon → Dashboard -->
+        <line x1="800" y1="310" x2="200" y2="430" stroke="#4A8A1A88" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow-dim)"/>
+
+        <!-- Arrow: Neon → Mobile -->
+        <line x1="800" y1="310" x2="610" y2="430" stroke="#4A8A1A88" stroke-width="1.5" stroke-dasharray="6,4" marker-end="url(#arrow-dim)"/>
+
+        <!-- Node 9: Dashboard -->
+        <rect x="20" y="400" width="180" height="100" rx="16" fill="#0a0a0a" stroke="#4A8A1A" stroke-width="1.5"/>
+        <!-- Browser icon -->
+        <rect x="46" y="424" width="26" height="18" rx="3" fill="none" stroke="#8DC44A" stroke-width="1.5"/>
+        <line x1="46" y1="430" x2="72" y2="430" stroke="#8DC44A" stroke-width="1"/>
+        <circle cx="51" cy="427" r="1.5" fill="#8DC44A"/>
+        <circle cx="56" cy="427" r="1.5" fill="#8DC44A"/>
+        <text x="80" y="434" fill="#F2F4F0" font-family="Space Grotesk" font-size="15" font-weight="600">Dashboard</text>
+        <text x="80" y="450" fill="#8DC44A" font-family="Space Grotesk" font-size="12" font-weight="500">bair1.live</text>
+        <text x="50" y="484" fill="#4A8A1A" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="1">WEB CLIENT</text>
+
+        <!-- Node 10: Mobile App -->
+        <rect x="500" y="400" width="180" height="100" rx="16" fill="#0a0a0a" stroke="#4A8A1A" stroke-width="1.5"/>
+        <!-- Phone icon -->
+        <rect x="530" y="420" width="16" height="26" rx="3" fill="none" stroke="#8DC44A" stroke-width="1.5"/>
+        <line x1="536" y1="440" x2="540" y2="440" stroke="#8DC44A" stroke-width="1.5"/>
+        <text x="554" y="434" fill="#F2F4F0" font-family="Space Grotesk" font-size="15" font-weight="600">Mobile App</text>
+        <text x="554" y="450" fill="#F2F4F088" font-family="Space Grotesk" font-size="11">Expo / React Native</text>
+        <text x="524" y="484" fill="#4A8A1A" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="1">MOBILE CLIENT</text>
+
+        <!-- Auth arrows to clients -->
+        <line x1="280" y1="310" x2="140" y2="400" stroke="#EB542444" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="400" y1="340" x2="560" y2="400" stroke="#EB542444" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- Label: Data flow -->
+        <text x="20" y="22" fill="#F2F4F033" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="2">DATA INGESTION</text>
+        <line x1="140" y1="18" x2="980" y2="18" stroke="#F2F4F011" stroke-width="1"/>
+
+        <text x="20" y="232" fill="#F2F4F033" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="2">SERVICES</text>
+        <line x1="80" y1="228" x2="980" y2="228" stroke="#F2F4F011" stroke-width="1"/>
+
+        <text x="20" y="392" fill="#F2F4F033" font-family="Space Grotesk" font-size="10" font-weight="600" letter-spacing="2">CLIENTS</text>
+        <line x1="72" y1="388" x2="980" y2="388" stroke="#F2F4F011" stroke-width="1"/>
+
+      </svg>
     </div>
-    <p style="margin-top: 16px; font-size: 0.9rem; color: #F2F4F055;">
-      Why the relay chain? SIM800L only speaks TLS 1.0. Vercel and Cloudflare require TLS 1.2+. AWS API Gateway is the bridge.
+
+    <p style="margin-top: 20px; font-size: 0.9rem; color: #F2F4F055;">
+      Why the relay chain? The SIM800L cellular module only speaks TLS 1.0. Vercel and Cloudflare require TLS 1.2+.
+      AWS API Gateway bridges the gap — sensor data flows through in under 60 seconds.
     </p>
   </div>
   <span class="slide-num">08 / 12</span>
