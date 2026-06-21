@@ -1,5 +1,7 @@
 # Bair1 — Better Air One
 
+![Bair1 prototype collage](submission-assets/bair1-photo-collage.jpg)
+
 Consumer air quality monitoring platform: a bear-shaped sensor paired with a web dashboard and mobile app.
 
 The sensor plugs in, connects to WiFi or cellular, and publishes PM1/PM2.5/PM10 readings to [bair1.live](https://bair1.live). One glance at the bear tells you if the air is good.
