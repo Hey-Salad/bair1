@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bair1 — Better Air One</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Space Grotesk', sans-serif; background: #1A2410; color: #F2F4F0; }
+  .slide {
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    padding: 60px 80px; position: relative; border-bottom: 2px solid #4A8A1A33;
+  }
+  h1 { font-size: 3.5rem; font-weight: 700; color: #8DC44A; margin-bottom: 20px; line-height: 1.1; }
+  h2 { font-size: 2.2rem; font-weight: 700; color: #8DC44A; margin-bottom: 24px; }
+  h3 { font-size: 1.4rem; font-weight: 500; color: #4A8A1A; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 2px; }
+  p, li { font-size: 1.3rem; line-height: 1.7; color: #F2F4F0cc; }
+  ul { list-style: none; padding: 0; }
+  ul li { padding: 8px 0; padding-left: 24px; position: relative; }
+  ul li::before { content: ''; position: absolute; left: 0; top: 18px; width: 10px; height: 10px; background: #4A8A1A; border-radius: 50%; }
+  .badge { display: inline-block; background: #4A8A1A; color: #1A2410; padding: 4px 14px; border-radius: 20px; font-size: 0.9rem; font-weight: 700; margin-bottom: 16px; }
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 30px; }
+  .stat { text-align: center; padding: 30px; border: 1px solid #4A8A1A44; border-radius: 12px; }
+  .stat .num { font-size: 3rem; font-weight: 700; color: #8DC44A; }
+  .stat .label { font-size: 1rem; color: #F2F4F0aa; margin-top: 8px; }
+  .arch-box { background: #0d160a; border: 1px solid #4A8A1A44; border-radius: 12px; padding: 30px; margin-top: 20px; }
+  pre { font-family: 'Space Grotesk', monospace; font-size: 1rem; color: #8DC44A; line-height: 1.6; overflow-x: auto; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px; }
+  .card { background: #0d160a; border: 1px solid #4A8A1A44; border-radius: 12px; padding: 24px; }
+  .card h3 { margin-bottom: 12px; }
+  .highlight { color: #8DC44A; font-weight: 700; }
+  .slide-num { position: absolute; bottom: 20px; right: 40px; color: #4A8A1A44; font-size: 1rem; }
+  .flow-arrow { color: #4A8A1A; font-size: 2rem; text-align: center; margin: 10px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  th { text-align: left; color: #4A8A1A; padding: 12px; border-bottom: 2px solid #4A8A1A44; font-size: 1.1rem; }
+  td { padding: 12px; border-bottom: 1px solid #4A8A1A22; font-size: 1.1rem; color: #F2F4F0cc; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide" style="text-align: center;">
+  <div>
+    <h3>Encode London Hackathon 2026</h3>
+    <h1 style="font-size: 5rem;">Bair1</h1>
+    <p style="font-size: 1.8rem; color: #8DC44Aaa;">Better Air One</p>
+    <p style="margin-top: 30px; font-size: 1.3rem;">A bear-shaped air quality sensor that tells you<br>if the air is safe — in one glance.</p>
+    <p style="margin-top: 40px; color: #4A8A1A;">bair1.live &nbsp;&bull;&nbsp; github.com/Hey-Salad/bair1</p>
+  </div>
+  <span class="slide-num">1</span>
+</div>
+
+<!-- SLIDE 2: The Problem -->
+<div class="slide">
+  <h3>The Problem</h3>
+  <h2>9 out of 10 people breathe polluted air</h2>
+  <ul>
+    <li>Thousands of London schools are near roads exceeding legal pollution limits</li>
+    <li>Existing monitors cost $200+ and display raw numbers nobody understands</li>
+    <li>Most people have zero visibility into the air inside their homes</li>
+    <li>No affordable, friendly consumer solution exists</li>
+  </ul>
+  <div class="stat-grid">
+    <div class="stat"><div class="num">36K</div><div class="label">UK deaths/year from air pollution</div></div>
+    <div class="stat"><div class="num">$200+</div><div class="label">Cost of current monitors</div></div>
+    <div class="stat"><div class="num">0</div><div class="label">Monitors designed for normal people</div></div>
+  </div>
+  <span class="slide-num">2</span>
+</div>
+
+<!-- SLIDE 3: The Solution -->
+<div class="slide">
+  <h3>The Solution</h3>
+  <h2>A bear that sniffs the air for you</h2>
+  <ul>
+    <li><span class="highlight">Plug in.</span> Connect to WiFi or cellular. Done.</li>
+    <li><span class="highlight">One glance.</span> Bear's expression = air quality. No numbers needed.</li>
+    <li><span class="highlight">Real data.</span> PM1, PM2.5, PM10 from a Sensirion SPS30 laser sensor</li>
+    <li><span class="highlight">Always connected.</span> Cellular (2G) means it works without WiFi</li>
+    <li><span class="highlight">Dashboard + App.</span> Deep-dive when you want, at bair1.live or on mobile</li>
+  </ul>
+  <span class="slide-num">3</span>
+</div>
+
+<!-- SLIDE 4: What We Built -->
+<div class="slide">
+  <h3>What We Built This Weekend</h3>
+  <h2>Silicon to screen — full stack</h2>
+  <div class="two-col">
+    <div class="card">
+      <h3>Hardware / Firmware</h3>
+      <ul>
+        <li>Seeed XIAO MG24 Sense MCU</li>
+        <li>Sensirion SPS30 PM sensor (I2C)</li>
+        <li>SIM800L cellular module</li>
+        <li>SSD1306 OLED display</li>
+        <li>PlatformIO / C++ firmware</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Cloud Infrastructure</h3>
+      <ul>
+        <li>AWS API Gateway (TLS 1.0 bridge)</li>
+        <li>Cloudflare Worker relay</li>
+        <li>Vercel Next.js 16 API + dashboard</li>
+        <li>Neon Postgres (serverless)</li>
+        <li>Auth0 + Stripe + Mapbox</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Web Dashboard</h3>
+      <ul>
+        <li>Real-time AQI gauge + bear</li>
+        <li>PM1/PM2.5/PM10 breakdown</li>
+        <li>Historical charts</li>
+        <li>Mapbox sensor map</li>
+        <li>Tailwind v4 dark theme</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Mobile App</h3>
+      <ul>
+        <li>React Native + Expo</li>
+        <li>Built on Bilt.me</li>
+        <li>5-tab UI (Home, Analytics, Map, Chat, Profile)</li>
+        <li>Same live backend</li>
+        <li>iOS + Android ready</li>
+      </ul>
+    </div>
+  </div>
+  <span class="slide-num">4</span>
+</div>
+
+<!-- SLIDE 5: Architecture -->
+<div class="slide">
+  <h3>Architecture</h3>
+  <h2>End-to-end data flow</h2>
+  <div class="arch-box">
+    <pre>
+  ESP32 / MG24          AWS API Gateway        Cloudflare Worker        Vercel API
+  + SPS30 sensor        (TLS 1.0 compat)       (bair1-relay)           (Next.js 16)
+  + SIM800L
+       │                     │                      │                      │
+       │   POST JSON         │    forward            │    forward           │
+       │   (cellular 2G)     │    + auth headers     │    (TLS 1.2)        │
+       ├────────────────────►├─────────────────────►├────────────────────►│
+       │   TLS 1.0           │                      │                      │
+                                                                           │
+                                                                    ┌──────┴──────┐
+                                                                    │ Neon Postgres│
+                                                                    │ (serverless) │
+                                                                    └──────┬──────┘
+                                                                           │
+                                                              ┌────────────┼────────────┐
+                                                              │            │            │
+                                                         Dashboard     Mobile App    Map View
+                                                         bair1.live    (Expo/RN)    (Mapbox)
+    </pre>
+  </div>
+  <span class="slide-num">5</span>
+</div>
+
+<!-- SLIDE 6: Business Model -->
+<div class="slide">
+  <h3>Business Model</h3>
+  <h2>Hardware + SaaS + B2B</h2>
+  <div class="two-col">
+    <div>
+      <table>
+        <tr><th>Revenue Stream</th><th>Price</th></tr>
+        <tr><td>Bear sensor (hardware)</td><td>&pound;49 one-time</td></tr>
+        <tr><td>Premium subscription</td><td>&pound;4.99/month</td></tr>
+        <tr><td>School/office network</td><td>Enterprise pricing</td></tr>
+      </table>
+      <p style="margin-top: 24px;">Premium unlocks: historical data, multi-room, smart alerts, API access, air quality reports</p>
+    </div>
+    <div>
+      <h3>Target Market</h3>
+      <ul>
+        <li>Health-conscious London families</li>
+        <li>Parents near high-pollution schools</li>
+        <li>Runners and outdoor exercisers</li>
+        <li>Allergy and asthma sufferers</li>
+        <li>Schools and nurseries (B2B)</li>
+      </ul>
+      <div class="stat" style="margin-top: 20px;">
+        <div class="num">8.4M</div>
+        <div class="label">London households (addressable market)</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">6</span>
+</div>
+
+<!-- SLIDE 7: Tech Stack -->
+<div class="slide">
+  <h3>Tech Stack</h3>
+  <h2>Built with Vercel, Cloudflare, and real hardware</h2>
+  <table>
+    <tr><th>Layer</th><th>Technology</th><th>Why</th></tr>
+    <tr><td>Web</td><td>Next.js 16 on Vercel</td><td>Server components, edge-fast, auto-deploy</td></tr>
+    <tr><td>Mobile</td><td>React Native + Expo on Bilt.me</td><td>Cross-platform, rapid iteration</td></tr>
+    <tr><td>Relay</td><td>Cloudflare Workers</td><td>Global edge, sub-ms cold start</td></tr>
+    <tr><td>TLS Bridge</td><td>AWS API Gateway + Lambda</td><td>TLS 1.0 for legacy cellular modules</td></tr>
+    <tr><td>Database</td><td>Neon Postgres (serverless)</td><td>Scale to zero, Vercel Marketplace</td></tr>
+    <tr><td>Auth</td><td>Auth0</td><td>Social login, multi-tenant ready</td></tr>
+    <tr><td>Payments</td><td>Stripe</td><td>Checkout + subscriptions</td></tr>
+    <tr><td>Maps</td><td>Mapbox GL JS</td><td>Custom styling, sensor clustering</td></tr>
+    <tr><td>Firmware</td><td>PlatformIO / C++</td><td>Arduino framework, OTA updates</td></tr>
+    <tr><td>Sensor</td><td>Sensirion SPS30</td><td>Research-grade PM accuracy</td></tr>
+  </table>
+  <span class="slide-num">7</span>
+</div>
+
+<!-- SLIDE 8: Demo -->
+<div class="slide" style="text-align: center;">
+  <h3>Live Demo</h3>
+  <h2>See it in action</h2>
+  <div style="margin-top: 40px;">
+    <p style="font-size: 2rem;"><span class="highlight">bair1.live</span></p>
+    <p style="margin-top: 12px;">Landing page &bull; Dashboard &bull; Live sensor data</p>
+    <p style="margin-top: 40px; font-size: 1.5rem;">github.com/Hey-Salad/bair1</p>
+    <p style="margin-top: 40px; color: #4A8A1A;">HeySalad Inc &bull; Encode London 2026</p>
+  </div>
+  <span class="slide-num">8</span>
+</div>
+
+</body>
+</html>
